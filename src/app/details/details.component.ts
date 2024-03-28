@@ -56,8 +56,11 @@ export class DetailsComponent {
   constructor() {
     const housingLocationId = Number(this.route.snapshot.params['id']);
     // 서비스를 통하여 정보 조회
-    this.housingLocation =
-      this.housingService.getHousingLocationById(housingLocationId);
+    this.housingService
+      .getHousingLocationById(housingLocationId)
+      .then((housingLocation) => {
+        this.housingLocation = housingLocation;
+      });
   }
 
   submitApplication() {

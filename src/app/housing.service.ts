@@ -120,4 +120,10 @@ export class HousingService {
       (housingLocation) => housingLocation.id === id
     );
   }
+  submitApplication(firstName: string, lastName: string, email: string): void {
+    // 신청 정보를 처리하는 코드를 여기에 작성합니다.
+    console.log(
+      `Application submitted by ${firstName} ${lastName} with email ${email}`
+    );
+  }
 }

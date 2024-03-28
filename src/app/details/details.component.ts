@@ -2,17 +2,23 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HousingService } from '../housing.service';
 import { HousingLocation } from '../housinglocation';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-details',
   standalone: true,
-  imports: [],
-  template: ` 
-  <article>
-    <img class="listing-photo" [src]="housingLocation?.photo" alt="Exterior photo of {{ housingLocation?.name }}" />
+  imports: [ReactiveFormsModule],
+  template: ` <article>
+    <img
+      class="listing-photo"
+      [src]="housingLocation?.photo"
+      alt="Exterior photo of {{ housingLocation?.name }}"
+    />
     <section class="listing=description">
       <h2 class="listing-heading">{{ housingLocation?.name }}</h2>
-      <p class="listing-location">{{ housingLocation?.city }}, {{ housingLocation?.state }}</p>
+      <p class="listing-location">
+        {{ housingLocation?.city }}, {{ housingLocation?.state }}
+      </p>
     </section>
     <section class="listing-features">
       <h2 class="section-heading">About this housing location</h2>
@@ -24,7 +30,15 @@ import { HousingLocation } from '../housinglocation';
     </section>
     <section class="listing-apply">
       <h2 class="section-heading">Apply now to live here</h2>
-      <button class="primary" type="button">Apply now</button>
+      <form [formGroup]="applyForm" (submit)="submitApplication()">
+        <label for="first-name">First Name</label>
+        <input type="text" id="first-name" formControlName="firstName" />
+        <label for="last-name">Last Name</label>
+        <input type="text" id="last-name" formControlName="lastName" />
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" />
+        <button type="submit" class="primary">Apply</button>
+      </form>
     </section>
   </article>`,
   styleUrl: './details.component.css',
@@ -33,11 +47,24 @@ export class DetailsComponent {
   route: ActivatedRoute = inject(ActivatedRoute);
   housingService: HousingService = inject(HousingService);
   housingLocation: HousingLocation | undefined;
+  applyForm = new FormGroup({
+    firstName: new FormControl(''),
+    lastName: new FormControl(''),
+    email: new FormControl(''),
+  });
 
   constructor() {
     const housingLocationId = Number(this.route.snapshot.params['id']);
     // 서비스를 통하여 정보 조회
     this.housingLocation =
       this.housingService.getHousingLocationById(housingLocationId);
+  }
+
+  submitApplication() {
+    this.housingService.submitApplication(
+      this.applyForm.value.firstName ?? '',
+      this.applyForm.value.lastName ?? '',
+      this.applyForm.value.email ?? ''
+    );
   }
 }
